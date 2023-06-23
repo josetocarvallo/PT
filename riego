@@ -1,0 +1,39 @@
+import machine
+import utime
+
+# Pin para controlar la bomba de riego
+bomba_pin = machine.Pin(2, machine.Pin.OUT)
+
+# Pin para leer el sensor de humedad del suelo
+sensor_pin = machine.ADC(26)
+
+# Umbral de humedad para activar el riego (ajústalo según tus necesidades)
+umbral_humedad = 500
+
+def leer_humedad_suelo():
+    # Leer el valor analógico del sensor de humedad del suelo
+    valor_analogico = sensor_pin.read_u16()
+    # Convertir el valor analógico a un rango de 0 a 100%
+    humedad = int(valor_analogico / 65535 * 100)
+    return humedad
+
+def activar_riego():
+    print("Activando riego...")
+    # Encender la bomba de riego
+    bomba_pin.on()
+    # Esperar un tiempo para regar (ajústalo según tus necesidades)
+    utime.sleep(5)
+    # Apagar la bomba de riego
+    bomba_pin.off()
+
+while True:
+    # Leer la humedad del suelo
+    humedad_suelo = leer_humedad_suelo()
+    print("Humedad del suelo:", humedad_suelo)
+
+    # Comprobar si es necesario activar el riego
+    if humedad_suelo < umbral_humedad:
+        activar_riego()
+
+    # Esperar un tiempo antes de volver a leer la humedad del suelo (ajústalo según tus necesidades)
+    utime.sleep(60)
